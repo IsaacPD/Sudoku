@@ -163,4 +163,12 @@ public class Game {
 			win &= s.size() == 9;
 		return win;
 	}
+
+	public void delete(int row, int column) {
+		int num = board[row][column].get();
+		rows.get(row).remove(num);
+		cols.get(column).remove(num);
+		squares.get(row / 3 * 3 + column / 3).remove(num);
+		board[row][column].set(0);
+	}
 }

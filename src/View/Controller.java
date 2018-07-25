@@ -1,5 +1,6 @@
 package View;
 
+import Style.StyleProperties;
 import Sudoku.Cell;
 import javafx.geometry.Insets;
 import javafx.scene.control.ToolBar;
@@ -21,10 +22,9 @@ public class Controller extends VBox {
 		borderPane.setCenter(menu);
 		borderPane.setPadding(new Insets(10));
 
-		this.setPrefHeight(480);
-		this.setPrefWidth(640);
 		this.getChildren().add(toolBar);
 		this.getChildren().add(borderPane);
+		this.getStyleClass().add(StyleProperties.CONTROLLER);
 	}
 
 	public void startGame() {
@@ -44,5 +44,10 @@ public class Controller extends VBox {
 	public void unhighlight(Cell cell) {
 		if (gameBoard.selected != cell)
 			cell.setStyle("-fx-border-color: black; -fx-border-width: 1;-fx-background-color: white");
+	}
+
+	public void delete(Cell cell) {
+		gameBoard.game.delete(cell.row, cell.column);
+		highlight(cell, true);
 	}
 }

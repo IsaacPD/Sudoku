@@ -1,5 +1,6 @@
 package View;
 
+import Style.StyleProperties;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -21,9 +22,8 @@ public class Menu extends BorderPane {
 
 		setButtonStyle();
 		setButtonAction();
-
 		this.setBottom(buttons);
-		this.setPadding(new Insets(20, 20, 20, 20));
+		this.getStyleClass().add(StyleProperties.MENU);
 	}
 
 	private void setButtonAction() {
