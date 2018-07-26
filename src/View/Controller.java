@@ -2,12 +2,11 @@ package View;
 
 import Style.StyleProperties;
 import Sudoku.Cell;
-import javafx.geometry.Insets;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 
-public class Controller extends VBox {
+public class Controller extends HBox {
 	ToolBar toolBar;
 	BorderPane borderPane;
 	Menu menu;
@@ -19,10 +18,9 @@ public class Controller extends VBox {
 		gameBoard = new GameBoard(this);
 		borderPane = new BorderPane();
 
+		borderPane.setTop(toolBar);
 		borderPane.setCenter(menu);
-		borderPane.setPadding(new Insets(10));
 
-		this.getChildren().add(toolBar);
 		this.getChildren().add(borderPane);
 		this.getStyleClass().add(StyleProperties.CONTROLLER);
 	}
