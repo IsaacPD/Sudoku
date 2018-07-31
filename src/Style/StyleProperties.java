@@ -10,4 +10,5 @@ public class StyleProperties {
     public static final String OPTIONTEXT = "otext";
     public static final String MENUBUTTON = "button";
 
+    public static final String STARTPAGE = "start";
 }

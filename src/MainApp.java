@@ -1,6 +1,7 @@
 import View.Controller;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -17,10 +18,11 @@ public class MainApp extends Application {
 
         control.prefWidthProperty().bind(scene.widthProperty());
         control.prefHeightProperty().bind(scene.heightProperty());
+        scene.setOnKeyPressed(control::keyPress);
 
         primaryStage.getScene().getStylesheets().add(getClass().getResource("/Style/style.css").toExternalForm());
-        primaryStage.setWidth(380);
-        primaryStage.setHeight(500);
+        primaryStage.setMinWidth(380);
+        primaryStage.setMinHeight(500);
         primaryStage.show();
         primaryStage.setTitle("Sudoku");
     }

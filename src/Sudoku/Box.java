@@ -6,7 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 
 public class Box extends GridPane {
-	Cell[][] cells;
+	public Cell[][] cells;
 
 	public Box(SimpleIntegerProperty[][] board, int row, int col, Controller control) {
 		cells = new Cell[3][3];

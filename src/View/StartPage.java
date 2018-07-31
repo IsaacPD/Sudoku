@@ -7,12 +7,12 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 
-public class Menu extends BorderPane {
+public class StartPage extends BorderPane {
 	Button start, load, exit, options;
 	GridPane buttons;
 	Controller control;
 
-	public Menu(Controller c) {
+	public StartPage(Controller c) {
 		this.control = c;
 		start = new Button("Start");
 		load = new Button("Load");
@@ -23,12 +23,13 @@ public class Menu extends BorderPane {
 		setButtonStyle();
 		setButtonAction();
 		this.setBottom(buttons);
-		this.getStyleClass().add(StyleProperties.MENU);
+		this.getStyleClass().add(StyleProperties.STARTPAGE);
 	}
 
 	private void setButtonAction() {
 		start.setOnAction(event -> control.startGame());
 		exit.setOnAction(event -> System.exit(0));
+		load.setOnAction(event -> control.loadGame());
 	}
 
 	private void setButtonStyle() {

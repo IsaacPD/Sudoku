@@ -5,170 +5,203 @@ import javafx.beans.property.SimpleIntegerProperty;
 import java.util.*;
 
 public class Game {
-	private static final int DEFAULT = 9;
-	private static final int SQRDEFAULT = 3;
-	private static final int MEDIUM = 54;
-	private static final Integer[] ONETONINE = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    private static final int DEFAULT = 9;
+    private static final int SQRDEFAULT = 3;
+    private static final int MEDIUM = 54;
+    private static final Integer[] ONETONINE = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-	public SimpleIntegerProperty[][] board;
-	private ArrayList<HashSet<Integer>> rows, cols, squares;
+    public SimpleIntegerProperty[][] board;
+    public int[][] intBoard;
+    private ArrayList<HashSet<Integer>> rows, cols, squares;
 
-	public Game() {
-		rows = new ArrayList<>(DEFAULT);
-		cols = new ArrayList<>(DEFAULT);
-		squares = new ArrayList<>(DEFAULT);
+    public Game() {
+        rows = new ArrayList<>(DEFAULT);
+        cols = new ArrayList<>(DEFAULT);
+        squares = new ArrayList<>(DEFAULT);
+        intBoard = new int[DEFAULT][DEFAULT];
 
-		for (int i = 0; i < DEFAULT; i++) {
-			rows.add(new HashSet<>());
-			cols.add(new HashSet<>());
-			squares.add(new HashSet<>());
-		}
+        for (int i = 0; i < DEFAULT; i++) {
+            rows.add(new HashSet<>());
+            cols.add(new HashSet<>());
+            squares.add(new HashSet<>());
+        }
 
-		board = new SimpleIntegerProperty[DEFAULT][DEFAULT];
-		for (int i = 0; i < DEFAULT; i++) {
-			for (int j = 0; j < DEFAULT; j++)
-				board[i][j] = new SimpleIntegerProperty();
-		}
-		generate();
-	}
+        board = new SimpleIntegerProperty[DEFAULT][DEFAULT];
+        for (int i = 0; i < DEFAULT; i++) {
+            for (int j = 0; j < DEFAULT; j++)
+                board[i][j] = new SimpleIntegerProperty();
+        }
+        generate();
+    }
 
-	public void generate() {
-		for (int i = 0; i < DEFAULT; i += SQRDEFAULT) {
-			fillDiag(i);
-			squares.get(i / 3 * 3 + i / 3).addAll(Arrays.asList(ONETONINE));
-		}
+    public void generate() {
+        clearSets();
 
-		fillRest(0, 0);
+        for (int i = 0; i < DEFAULT; i += SQRDEFAULT) {
+            fillDiag(i);
+            squares.get(i / 3 * 3 + i / 3).addAll(Arrays.asList(ONETONINE));
+        }
 
-		removeRandom(MEDIUM);
-	}
+        fillRest(0, 0);
 
-	private void removeRandom(int h) {
-		for (int i = 0; i < h; i++) {
-			int row, col;
-			do {
-				row = (int) (9 * Math.random());
-				col = (int) (9 * Math.random());
-			} while (board[row][col].get() == 0);
-			int old = board[row][col].get();
-			rows.get(row).remove(old);
-			cols.get(col).remove(old);
-			squares.get(row / 3 * 3 + col / 3).remove(old);
-			board[row][col].set(0);
-		}
-	}
+        removeRandom(MEDIUM);
+        intBoard = asIntGrid();
+    }
 
-	private boolean fillRest(int row, int col) {
-		if (row < DEFAULT - 1 && col >= DEFAULT) {
-			col = 0;
-			row++;
-		}
+    private void removeRandom(int h) {
+        for (int i = 0; i < h; i++) {
+            int row, col;
+            do {
+                row = (int) (9 * Math.random());
+                col = (int) (9 * Math.random());
+            } while (board[row][col].get() == 0);
+            int old = board[row][col].get();
+            rows.get(row).remove(old);
+            cols.get(col).remove(old);
+            squares.get(row / 3 * 3 + col / 3).remove(old);
+            board[row][col].set(0);
+        }
+    }
 
-		//Skip Diagonals
-		for (int i = 3; i <= 9; i += 3) {
-			if (i == 9) {
-				if (col == 6) {
-					row++;
-					col = 0;
-					if (row == i)
-						return true;
-					break;
-				}
-			}
-			if (row < i) {
-				if (col == i - 3)
-					col = i;
-				break;
-			}
-		}
+    private boolean fillRest(int row, int col) {
+        if (row < DEFAULT - 1 && col >= DEFAULT) {
+            col = 0;
+            row++;
+        }
 
-		for (int num = 1; num <= 9; num++) {
-			ArrayList<Integer> nums = new ArrayList<>(Arrays.asList(ONETONINE));
+        //Skip Diagonals
+        for (int i = 3; i <= 9; i += 3) {
+            if (i == 9) {
+                if (col == 6) {
+                    row++;
+                    col = 0;
+                    if (row == i)
+                        return true;
+                    break;
+                }
+            }
+            if (row < i) {
+                if (col == i - 3)
+                    col = i;
+                break;
+            }
+        }
 
-			nums.removeAll(rows.get(row));
-			nums.removeAll(cols.get(col));
-			nums.removeAll(squares.get(row / 3 * 3 + col / 3));
+        for (int num = 1; num <= 9; num++) {
+            ArrayList<Integer> nums = new ArrayList<>(Arrays.asList(ONETONINE));
 
-			if (nums.contains(num)) {
-				board[row][col].set(num);
-				rows.get(row).add(num);
-				cols.get(col).add(num);
-				squares.get(row / 3 * 3 + col / 3).add(num);
-				if (fillRest(row, col + 1)) {
-					return true;
-				}
-				board[row][col].set(0);
-				rows.get(row).remove(num);
-				cols.get(col).remove(num);
-				squares.get(row / 3 * 3 + col / 3).remove(num);
-			}
-		}
-		return false;
-	}
+            nums.removeAll(rows.get(row));
+            nums.removeAll(cols.get(col));
+            nums.removeAll(squares.get(row / 3 * 3 + col / 3));
 
-	private void fillDiag(int row) {
-		ArrayList<Integer> nums = new ArrayList<>(Arrays.asList(ONETONINE));
-		for (int i = 0; i < SQRDEFAULT; i++) {
-			for (int j = 0; j < SQRDEFAULT; j++) {
-				int n = nums.remove((int) (nums.size() * Math.random()));
-				board[row + i][row + j].set(n);
-				rows.get(row + i).add(n);
-				cols.get(row + j).add(n);
-			}
-		}
-	}
+            if (nums.contains(num)) {
+                board[row][col].set(num);
+                rows.get(row).add(num);
+                cols.get(col).add(num);
+                squares.get(row / 3 * 3 + col / 3).add(num);
+                if (fillRest(row, col + 1)) {
+                    return true;
+                }
+                board[row][col].set(0);
+                rows.get(row).remove(num);
+                cols.get(col).remove(num);
+                squares.get(row / 3 * 3 + col / 3).remove(num);
+            }
+        }
+        return false;
+    }
 
-	public ArrayList<Integer> getCell(int row, int col) {
-		ArrayList<Integer> nums = new ArrayList<>(Arrays.asList(ONETONINE));
+    private void fillDiag(int row) {
+        ArrayList<Integer> nums = new ArrayList<>(Arrays.asList(ONETONINE));
+        for (int i = 0; i < SQRDEFAULT; i++) {
+            for (int j = 0; j < SQRDEFAULT; j++) {
+                int n = nums.remove((int) (nums.size() * Math.random()));
+                board[row + i][row + j].set(n);
+                rows.get(row + i).add(n);
+                cols.get(row + j).add(n);
+            }
+        }
+    }
 
-		nums.removeAll(rows.get(row));
-		nums.removeAll(cols.get(col));
-		nums.removeAll(squares.get(row / 3 * 3 + col / 3));
-		return nums;
-	}
+    public ArrayList<Integer> getCell(int row, int col) {
+        ArrayList<Integer> nums = new ArrayList<>(Arrays.asList(ONETONINE));
 
-	public String toString() {
-		StringBuilder b = new StringBuilder();
-		for (int i = 0; i < DEFAULT; i++) {
-			for (int j = 0; j < DEFAULT; j++) {
-				b.append((board[i][j] == null ? 0 : board[i][j]) + " ");
-			}
-			b.append("\n");
-		}
-		return b.toString();
-	}
+        nums.removeAll(rows.get(row));
+        nums.removeAll(cols.get(col));
+        nums.removeAll(squares.get(row / 3 * 3 + col / 3));
+        return nums;
+    }
 
-	public static void main(String... args) {
-		Game g = new Game();
-		System.out.println(g);
-	}
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < DEFAULT; i++) {
+            for (int j = 0; j < DEFAULT; j++) {
+                b.append((board[i][j] == null ? 0 : board[i][j]) + " ");
+            }
+            b.append("\n");
+        }
+        return b.toString();
+    }
 
-	public void update(int row, int column, int newNum) {
-		int old = board[row][column].get();
-		rows.get(row).remove(old);
-		rows.get(row).add(newNum);
-		cols.get(column).remove(old);
-		cols.get(column).add(newNum);
-		squares.get(row / 3 * 3 + column / 3).remove(old);
-		squares.get(row / 3 * 3 + column / 3).add(newNum);
-	}
+    public void update(int row, int column, int newNum) {
+        int old = board[row][column].get();
+        rows.get(row).remove(old);
+        rows.get(row).add(newNum);
+        cols.get(column).remove(old);
+        cols.get(column).add(newNum);
+        squares.get(row / 3 * 3 + column / 3).remove(old);
+        squares.get(row / 3 * 3 + column / 3).add(newNum);
+    }
 
-	public boolean win() {
-		boolean win = true;
-		for (HashSet<Integer> s : rows)
-			win &= s.size() == 9;
-		for (HashSet<Integer> s : cols)
-			win &= s.size() == 9;
-		for (HashSet<Integer> s : squares)
-			win &= s.size() == 9;
-		return win;
-	}
+    public boolean win() {
+        boolean win = true;
+        for (HashSet<Integer> s : rows)
+            win &= s.size() == 9;
+        for (HashSet<Integer> s : cols)
+            win &= s.size() == 9;
+        for (HashSet<Integer> s : squares)
+            win &= s.size() == 9;
+        return win;
+    }
 
-	public void delete(int row, int column) {
-		int num = board[row][column].get();
-		rows.get(row).remove(num);
-		cols.get(column).remove(num);
-		squares.get(row / 3 * 3 + column / 3).remove(num);
-		board[row][column].set(0);
-	}
+    public void delete(int row, int column) {
+        int num = board[row][column].get();
+        rows.get(row).remove(num);
+        cols.get(column).remove(num);
+        squares.get(row / 3 * 3 + column / 3).remove(num);
+        board[row][column].set(0);
+    }
+
+    public int[][] getIntBoard() {
+        return intBoard;
+    }
+
+    public int[][] asIntGrid() {
+        int[][] board = new int[DEFAULT][DEFAULT];
+        for (int i = 0; i < DEFAULT; i++)
+            for (int j = 0; j < DEFAULT; j++)
+                board[i][j] = this.board[i][j].get();
+        return board;
+    }
+
+    public void setBoard(int[][] board) {
+        clearSets();
+
+        for (int i = 0; i < DEFAULT; i++)
+            for (int j = 0; j < DEFAULT; j++) {
+                int num = board[i][j];
+                rows.get(i).add(num);
+                cols.get(j).add(num);
+                squares.get(i / 3 * 3 + j / 3).add(num);
+                this.board[i][j].set(board[i][j]);
+            }
+    }
+
+    private void clearSets() {
+        for (int i = 0; i < 9; i++) {
+            rows.get(i).clear();
+            cols.get(i).clear();
+            squares.get(i).clear();
+        }
+    }
 }
