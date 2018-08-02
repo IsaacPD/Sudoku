@@ -1,11 +1,14 @@
 package View;
 
 import Style.StyleProperties;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 
 public class StartPage extends BorderPane {
 	Button start, load, exit, options;
@@ -19,9 +22,16 @@ public class StartPage extends BorderPane {
 		exit = new Button("Exit");
 		options = new Button("Options");
 		buttons = new GridPane();
+		Text sudoku = new Text("SUDOKU");
+
+		SimpleDoubleProperty fontSize = new SimpleDoubleProperty();
+		fontSize.bind(control.widthProperty().multiply(.09));
+		sudoku.styleProperty().bind(Bindings.concat("-fx-font-size: ", fontSize.asString(), ";"));
 
 		setButtonStyle();
 		setButtonAction();
+
+		this.setCenter(sudoku);
 		this.setBottom(buttons);
 		this.getStyleClass().add(StyleProperties.STARTPAGE);
 	}
