@@ -24,7 +24,7 @@ public class GameBoard extends BorderPane {
     GridPane options;
     Box[][] board;
     VBox newGamePop;
-    Game game;
+    public Game game;
     Controller control;
     Popup pop;
 

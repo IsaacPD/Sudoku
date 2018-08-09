@@ -1,6 +1,7 @@
 package View;
 
 import Actions.Actions;
+import Actions.DeleteAction;
 import Style.StyleProperties;
 import Sudoku.Cell;
 import javafx.scene.control.Menu;
@@ -77,8 +78,7 @@ public class Controller extends HBox {
     }
 
     public void delete(Cell cell) {
-        gameBoard.game.delete(cell.row, cell.column);
-        highlight(cell, true);
+        actions.add(new DeleteAction(gameBoard, cell, this));
     }
 
     public void keyPress(KeyEvent e) {
